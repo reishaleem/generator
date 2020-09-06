@@ -54,9 +54,8 @@ class Alphabet:
 
     # alphabet should be a list of all the Letters in the alphabet being used. It could be the simple ABCs, or a custom alphabet.
     # Note when we say Letters, we mean something with a letter and an is_vowel value
-    def __init__(self, alphabet, probability_matrix):
+    def __init__(self, alphabet):
         self.alphabet = alphabet
-        self.probability_matrix = probability_matrix
 
     @classmethod
     def english_alphabet(cls, names_category):
@@ -89,14 +88,18 @@ class Alphabet:
             Letter("z", False, 25),
         ]
 
-        probability = get_english_name_prob_matrix(letterList)
+        return Alphabet(letterList)
+
+    def get_probability_matrix(self, option):
+        probability = []
+        if option == "english human":
+            probability = get_english_name_prob_matrix(self.alphabet)
 
         # Write probability matrix to file. This file will be read by the name generator.
         file_name = "output.csv"
         with open(file_name, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            for i in range(0, len(letterList)):
+            for i in range(0, len(self.alphabet)):
                 writer.writerow(probability[i])
-
-        return Alphabet(letterList, probability)
+        return file_name
