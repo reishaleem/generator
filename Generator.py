@@ -39,7 +39,7 @@ class Generator:
         name_length = randint(min_length, max_length)
 
         # Start with the first letter
-        name = [self.alphabet[randint(0, len(self.alphabet))]]
+        name = [self.alphabet[randint(0, len(self.alphabet) - 1)]]
 
         vowel_needed = False
         previous_letter_position = name[0].position
@@ -54,6 +54,7 @@ class Generator:
             letter = get_random_letter(
                 self.alphabet, vowel_needed, self.probability_matrix, previous_letter_position)
             name.append(letter)
+            previous_letter_position = letter.position
 
         name_string = ""
         for letter in name:

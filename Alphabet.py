@@ -1,3 +1,6 @@
+import csv
+
+
 class Letter:
 
     # letter is something like 'a' or 'A', ie just a letter.
@@ -6,6 +9,49 @@ class Letter:
         self.letter = letter
         self.is_vowel = is_vowel
         self.position = position
+
+
+def get_english_name_prob_matrix(alphabet):
+    # Start all probabilites at 0
+    probability = [[0 for i in range(26)] for i in range(26)]
+
+    with open("english_names.csv", newline='') as csvfile:
+        names = csv.reader(csvfile, delimiter=",", quotechar="|")
+        for value in names:
+            name = value[0].lower()
+            for i in range(len(name) - 1):
+                letter1 = name[i]
+                letter2 = name[i + 1]
+                first_num = 0
+                second_num = 0
+                # this just assigns first and second num to the position of each letter in the alphabet. See if we can simplify this later.
+                for j in range(26):
+
+                    if letter1 == alphabet[j].letter:
+                        first_num = alphabet[j].position
+                    if letter2 == alphabet[j].letter:
+                        second_num = alphabet[j].position
+                # Add one to the number of times letter number i is followed by letter number i+1.
+                probability[first_num][second_num] += 1
+
+    # Normalize the matrix
+    normalized_probability = probability
+    for i in range(26):
+        total = 0
+        for j in range(26):
+            total += probability[i][j]
+        if (total > 0):
+            for j in range(26):
+                normalized_probability[i][j] = probability[i][j]/total
+        else:
+            for j in range(26):
+                normalized_probability[i][j] = len(alphabet)**(-1)
+    # print(normalized_probability[0])
+    total = 0
+    for i in range(26):
+        total += probability[17][i]
+    print(total)
+    return normalized_probability
 
 
 class Alphabet:
@@ -17,7 +63,7 @@ class Alphabet:
         self.probability_matrix = probability_matrix
 
     @classmethod
-    def english_alphabet(cls):
+    def english_alphabet(cls, names_category):
         letterList = [
             Letter("a", True, 0),
             Letter("b", False, 1),
@@ -47,15 +93,15 @@ class Alphabet:
             Letter("z", False, 25),
         ]
 
-        # Start all probabilites at 1
-        probability = [[1 for i in range(26)] for i in range(26)]
+        probability = get_english_name_prob_matrix(letterList)
 
-        # these are just for show right now. We really want the program to be able to determine these
-        probability[23][23] = 0  # No xx.
-        probability[12][3] = 0.1  # Rare md.
-        probability[16][17] = 0  # No qr.
-        probability[23][16] = 0  # No xq.
-        probability[23][12] = 0  # No xm.
+        # Write probability matrix to file. This file will be read by the name generator.
+        file_name = "testing.csv"
+        with open(file_name, 'w', newline='') as csvfile:
+            prob_writer = csv.writer(csvfile, delimiter=',',
+                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            for i in range(0, len(letterList)):
+                prob_writer.writerow(probability[i])
 
         # Normalize the probability matrix
         for i in range(26):
