@@ -46,11 +46,7 @@ def get_english_name_prob_matrix(alphabet):
         else:
             for j in range(26):
                 normalized_probability[i][j] = len(alphabet)**(-1)
-    # print(normalized_probability[0])
-    total = 0
-    for i in range(26):
-        total += probability[17][i]
-    print(total)
+
     return normalized_probability
 
 
@@ -96,19 +92,11 @@ class Alphabet:
         probability = get_english_name_prob_matrix(letterList)
 
         # Write probability matrix to file. This file will be read by the name generator.
-        file_name = "testing.csv"
+        file_name = "output.csv"
         with open(file_name, 'w', newline='') as csvfile:
-            prob_writer = csv.writer(csvfile, delimiter=',',
-                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            writer = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
             for i in range(0, len(letterList)):
-                prob_writer.writerow(probability[i])
-
-        # Normalize the probability matrix
-        for i in range(26):
-            total = 0
-            for j in range(26):
-                total += probability[i][j]
-            for j in range(26):
-                probability[i][j] /= total
+                writer.writerow(probability[i])
 
         return Alphabet(letterList, probability)
